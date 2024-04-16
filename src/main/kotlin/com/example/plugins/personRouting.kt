@@ -1,6 +1,5 @@
 package com.example.plugins
-import com.example.db.Person
-import com.example.db.personStorage
+import com.example.db.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -30,11 +29,20 @@ fun  Route.personRouting() {
             call.respond(person)
         }
         post {
-            val person = call.receive<Person>()
+            val inputPerson = call.receive<PersonInput>()
+            val id = createPerson(inputPerson.namePerson, inputPerson.phoneNumber, inputPerson.expeditionID)
+            val person = Person(id, inputPerson.namePerson, inputPerson.phoneNumber, inputPerson.expeditionID)
             personStorage.add(person)
-            call.respondText("Person stored correctly", status = HttpStatusCode.Created)
+            call.respondText("Person stored correctly with id $id", status = HttpStatusCode.Created)
         }
+
         delete("{id?}") {
+            val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
+            if (personStorage.removeIf { it.idPerson == id.toInt() }) {
+                call.respondText("Person removed correctly", status = HttpStatusCode.Accepted)
+            } else {
+                call.respondText("Not Found", status = HttpStatusCode.NotFound)
+            }
         }
     }
 }

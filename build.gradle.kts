@@ -37,4 +37,9 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-core:0.35.2")
+    implementation("org.jetbrains.exposed:exposed-dao:0.35.2")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.35.2")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.35.2")
+    implementation("org.jetbrains.exposed:exposed-jodatime:0.35.2")
 }

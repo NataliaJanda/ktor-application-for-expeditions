@@ -1,6 +1,5 @@
 package com.example.plugins
-import com.example.db.Expedition
-import com.example.db.expeditionStorage
+import com.example.db.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -31,12 +30,19 @@ fun Route.expeditionRouting() {
             call.respond(expedition)
         }
         post {
-            val expedition = call.receive<Expedition>()
+            val inputExpedition = call.receive<ExpeditionInput>()
+            val id = createExpedition(inputExpedition.nameExpedition, inputExpedition.mountainName)
+            val expedition = Expedition(id, inputExpedition.nameExpedition, inputExpedition.mountainName)
             expeditionStorage.add(expedition)
-            call.respondText("Expedition stored correctly", status = HttpStatusCode.Created)
+            call.respondText("Expedition stored correctly with id $id", status = HttpStatusCode.Created)
         }
         delete("{id?}") {
-
+            val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
+            if (expeditionStorage.removeIf { it.idExpedition == id.toInt() }) {
+                call.respondText("Expedition removed correctly", status = HttpStatusCode.Accepted)
+            } else {
+                call.respondText("Not Found", status = HttpStatusCode.NotFound)
+            }
         }
     }
 }
